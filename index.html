@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MUBIN CLUB</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;700&family=Roboto+Mono:wght@700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- আপনার নির্দেশিত এক্সটার্নাল CSS ফাইল -->
+    <link rel="stylesheet" href="https://binfunzs.top/mubin/mubin.css">
+</head>
+<body>
+    <!-- SPLASH SCREEN START -->
+    <div id="splash-screen">
+        <div class="splash-loader"></div>
+        <div class="splash-image-container">
+            <img src="https://firebasestorage.googleapis.com/v0/b/image-to-link-6621c.appspot.com/o/storage%2Fdata%2F75823.jpg?alt=media&token=1e48bdeb-a28a-4ac0-ab18-4e5a3e53ff73" alt="Welcome">
+        </div>
+    </div>
+    <!-- SPLASH SCREEN END -->
+
+    <div class="container" style="display: none;">
+        <header class="header">
+            <h1>MUBIN CLUB</h1>
+            <div class="balance-section">
+                <span>Balance: ৳</span>
+                <span id="user-balance">0.00</span>
+                <button id="refresh-balance-btn" title="Refresh Balance">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"></polyline><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path></svg>
+                </button>
+            </div>
+        </header>
+
+        <div class="notice-bar">
+            <div class="notice-content" id="notice-content"></div>
+        </div>
+
+        <div class="nav-tabs">
+            <button class="nav-tab active" data-page="home">Home</button>
+            <button class="nav-tab" data-page="wallet">Wallet</button>
+            <button class="nav-tab" data-page="profile">Account</button>
+        </div>
+
+        <div id="home-page" class="page-content active">
+            <main class="game-container">
+                <div id="timer-overlay">
+                    <span id="overlay-countdown-text"></span>
+                </div>
+
+                <section class="timer-section">
+                    <div class="timer-info">
+                        <div>
+                            <h2>WinGo 1 Min</h2>
+                            <p>Period: <span id="currentPeriod">Loading...</span></p>
+                        </div>
+                        <div>
+                            <p>Time Remaining</p>
+                            <div id="countdown">00:00</div>
+                        </div>
+                    </div>
+                </section>
+
+                <div class="betting-area">
+                    <section class="betting-options">
+                        <button class="btn btn-green" data-bet-type="Green">Green</button>
+                        <button class="btn btn-violet" data-bet-type="Violet">Violet</button>
+                        <button class="btn btn-red" data-bet-type="Red">Red</button>
+                    </section>
+                    
+                    <!-- Number Grid: কালার বাদ দিয়ে ছবির জন্য প্রস্তুত করা হয়েছে -->
+                    <section class="number-grid">
+                        <button class="btn btn-number btn-num-0" data-bet-type="0">0</button>
+                        <button class="btn btn-number btn-num-1" data-bet-type="1">1</button>
+                        <button class="btn btn-number btn-num-2" data-bet-type="2">2</button>
+                        <button class="btn btn-number btn-num-3" data-bet-type="3">3</button>
+                        <button class="btn btn-number btn-num-4" data-bet-type="4">4</button>
+                        <button class="btn btn-number btn-num-5" data-bet-type="5">5</button>
+                        <button class="btn btn-number btn-num-6" data-bet-type="6">6</button>
+                        <button class="btn btn-number btn-num-7" data-bet-type="7">7</button>
+                        <button class="btn btn-number btn-num-8" data-bet-type="8">8</button>
+                        <button class="btn btn-number btn-num-9" data-bet-type="9">9</button>
+                    </section>
+
+                    <section class="size-options">
+                        <button class="btn btn-big" data-bet-type="Big">Big</button>
+                        <button class="btn btn-small" data-bet-type="Small">Small</button>
+                    </section>
+                </div>
+            </main>
+
+            <div class="tabs">
+                <button class="tab-btn active" data-tab="game-history">Game History</button>
+                <button class="tab-btn" data-tab="my-history">All History</button>
+            </div>
+
+            <div id="game-history-panel" class="tab-panel active">
+                <div class="history-container">
+                    <table>
+                        <thead>
+                            <tr><th>Period</th><th>Number</th><th>Big/Small</th><th>Color</th></tr>
+                        </thead>
+                        <tbody id="resultBody"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div id="my-history-panel" class="tab-panel">
+                <div class="history-container">
+                    <table id="my-history-table">
+                        <thead>
+                            <tr><th>Period</th><th>Bet</th><th>Amount</th><th>Result</th></tr>
+                        </thead>
+                        <tbody id="myHistoryBody"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div id="wallet-page" class="page-content">
+            <div class="page-header">
+                <button class="back-btn" onclick="navigateToPage('home')"><i class="fas fa-arrow-left"></i></button>
+                <h2 class="page-title">Wallet</h2>
+            </div>
+            <div class="wallet-card">
+                <div class="wallet-balance">
+                    <h2>Available Balance</h2>
+                    <p>৳<span id="wallet-balance-total">0.00</span></p>
+                    <div class="balance-breakdown">
+                         <div>
+                            <h3>Deposit</h3>
+                            <p>৳<span id="wallet-balance-deposit">0.00</span></p>
+                        </div>
+                        <div>
+                            <h3>Winning</h3>
+                            <p>৳<span id="wallet-balance-winning">0.00</span></p>
+                        </div>
+                    </div>
+                </div>
+                <div class="wallet-actions">
+                    <button class="wallet-action-btn deposit-btn" onclick="navigateToPage('deposit-select')">
+                        <i class="fas fa-arrow-down"></i> Deposit
+                    </button>
+                    <button class="wallet-action-btn withdraw-btn" id="withdraw-nav-btn">
+                        <i class="fas fa-arrow-up"></i> Withdraw
+                    </button>
+                </div>
+            </div>
+
+            <div class="transaction-history">
+                <h3>Transaction History</h3>
+                <div class="transaction-history-list" id="transaction-list"></div>
+            </div>
+        </div>
+        
+        <div id="deposit-select-page" class="page-content">
+             <div class="page-header">
+                <button class="back-btn" onclick="navigateToPage('wallet')"><i class="fas fa-arrow-left"></i></button>
+                <h2 class="page-title">Deposit</h2>
+            </div>
+            <div class="payment-tabs">
+                <div class="payment-tab active" id="bkash-tab" onclick="switchPaymentMethod('bKash')">bKash</div>
+                <div class="payment-tab" id="nagad-tab" onclick="switchPaymentMethod('Nagad')">Nagad</div>
+            </div>
+            <div class="deposit-notice">
+                এই অ্যাপে ডিপোজিট করার জন্য অবশ্যই <strong>সেন্ড মানি</strong> করতে হবে।
+            </div>
+             <div id="payment-number-container">
+                <p>Loading payment numbers...</p>
+            </div>
+            <div class="form-group">
+                <label for="deposit-amount-input">টাকার পরিমাণ</label>
+                <input type="number" id="deposit-amount-input" placeholder="Enter amount">
+                <div class="amount-quick-select" id="amount-quick-select"></div>
+            </div>
+            <button class="submit-btn" id="deposit-next-btn">Next</button>
+        </div>
+        
+        <div id="deposit-confirm-page" class="page-content">
+            <div class="page-header">
+                <button class="back-btn" onclick="navigateToPage('deposit-select')"><i class="fas fa-arrow-left"></i></button>
+                <h2 class="page-title">Confirm Deposit</h2>
+            </div>
+             <div class="confirmation-box">
+                <div class="label">অনুগ্রহ করে নিচের <span id="payment-method-label">bKash</span> পার্সোনাল নাম্বারে 'সেন্ড মানি' করুন এবং সঠিক TxnID পূরণ করুন।</div>
+                <div class="label" style="color: var(--accent-red); margin-top: 10px;">ক্যাশ আউট ব্যবহার না করে সেন্ড মানি করুন</div>
+                
+                <p style="margin: 15px 0;">ওয়ালেট</p>
+                 <div class="value-box">
+                    <span class="value" id="confirm-payment-number">...</span>
+                    <button class="copy-btn" id="copy-payment-number-btn"><i class="fas fa-copy"></i></button>
+                </div>
+
+                <p style="margin: 15px 0;">পরিমাণ</p>
+                 <div class="value-box">
+                    <span class="value" id="confirm-payment-amount">৳0</span>
+                </div>
+                 
+                <div class="form-group" style="text-align: left;">
+                    <label for="txn-id-input">রিচার্জ সম্পূর্ণ করতে অনুগ্রহ করে লেনদেন আইডি লিখুন</label>
+                    <input type="text" id="txn-id-input" placeholder="Enter Transaction ID">
+                </div>
+                
+                <button class="submit-btn" id="confirm-deposit-submit-btn">জমা দিন</button>
+            </div>
+        </div>
+
+        <div id="withdraw-page" class="page-content">
+             <div class="page-header">
+                <button class="back-btn" onclick="navigateToPage('wallet')"><i class="fas fa-arrow-left"></i></button>
+                <h2 class="page-title">Withdraw</h2>
+            </div>
+            <div class="wallet-card">
+                 <div class="wallet-balance" style="margin-bottom: 25px;">
+                    <h2>Available for Withdrawal</h2>
+                    <p>৳<span id="withdrawal-available-balance">0.00</span></p>
+                </div>
+                <p>আপনার উইথড্রয়ালের পরিমাণ এবং বিবরণ লিখুন:</p>
+                <small>আপনি শুধুমাত্র উইনিং ব্যালেন্স থেকে টাকা তুলতে পারবেন।</small>
+                <div class="form-group">
+                    <label for="withdraw-amount">Amount</label>
+                    <input type="number" id="withdraw-amount" placeholder="Amount">
+                </div>
+                <div class="form-group">
+                    <label for="withdraw-method">Payment Method</label>
+                    <input type="text" id="withdraw-method" placeholder="bKash, Nagad, etc.">
+                </div>
+                <div class="form-group">
+                    <label for="withdraw-account">Account Number</label>
+                    <input type="text" id="withdraw-account" placeholder="Your account number">
+                </div>
+                <button class="submit-btn" id="withdraw-submit-btn">Submit Request</button>
+            </div>
+        </div>
+
+        <div id="profile-page" class="page-content">
+            <div class="profile-card">
+                <div class="profile-avatar">
+                    <i class="fas fa-user"></i>
+                </div>
+                <div class="profile-info">
+                    <h2 id="user-name">User Name</h2>
+                    <p>UID: <span id="user-id">...</span></p>
+                    <p>Phone: <span id="user-phone">...</span></p>
+                </div>
+            </div>
+            <div class="profile-menu-list">
+                 <div class="profile-menu-item" onclick="navigateToPage('wallet')">
+                    <i class="fas fa-wallet"></i>
+                    <span>Wallet</span>
+                </div>
+                <div class="profile-menu-item" onclick="navigateToPage('referral')">
+                    <i class="fas fa-user-friends"></i>
+                    <span>Referral</span>
+                </div>
+                <div class="profile-menu-item" onclick="navigateToPage('bonus')">
+                    <i class="fas fa-gift"></i>
+                    <span>Bonus</span>
+                </div>
+                 <div class="profile-menu-item" onclick="navigateToPage('settings')">
+                    <i class="fas fa-cog"></i>
+                    <span>Settings</span>
+                </div>
+                <div class="profile-menu-item" id="profile-download-btn">
+                    <i class="fas fa-download"></i>
+                    <span>Download App</span>
+                </div>
+            </div>
+             <button class="submit-btn" id="logout-btn" style="background: var(--gradient-danger); margin-top: 20px;">
+                <i class="fas fa-sign-out-alt"></i> Logout
+            </button>
+        </div>
+
+        <div id="referral-page" class="page-content">
+            <div class="page-header">
+                <button class="back-btn" onclick="navigateToPage('profile')"><i class="fas fa-arrow-left"></i></button>
+                <h2 class="page-title">Referral</h2>
+            </div>
+            <div class="referral-card">
+                <h2>Your Referral Code</h2>
+                <div class="referral-code-container">
+                    <div class="referral-code" id="referral-code">...</div>
+                    <button class="copy-btn" id="copy-referral-btn">
+                        <i class="fas fa-copy"></i> Copy
+                    </button>
+                </div>
+                <p>Share this code with your friends and earn bonus when they register!</p>
+            </div>
+
+            <div class="referral-stats">
+                <div class="stat-card">
+                    <div class="stat-value" id="referral-count">0</div>
+                    <div class="stat-label">Total Referrals</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="referral-bonus">৳0</div>
+                    <div class="stat-label">Total Bonus</div>
+                </div>
+            </div>
+        </div>
+
+        <div id="bonus-page" class="page-content">
+             <div class="page-header">
+                <button class="back-btn" onclick="navigateToPage('profile')"><i class="fas fa-arrow-left"></i></button>
+                <h2 class="page-title">Bonus</h2>
+            </div>
+            <div class="gift-code-card">
+                <h2>Redeem Gift Code</h2>
+                <div class="gift-code-form">
+                    <div class="form-group">
+                        <label for="gift-code-input-field">Enter Gift Code</label>
+                        <input type="text" id="gift-code-input-field" placeholder="Enter your gift code here">
+                    </div>
+                    <button class="submit-btn" id="redeem-gift-btn">Redeem</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="settings-page" class="page-content">
+             <div class="page-header">
+                <button class="back-btn" onclick="navigateToPage('profile')"><i class="fas fa-arrow-left"></i></button>
+                <h2 class="page-title">Settings</h2>
+            </div>
+            <div class="profile-card">
+                <h2>Change Password</h2>
+                <div class="auth-form">
+                    <div class="form-group">
+                        <label for="current-password">Current Password</label>
+                        <input type="password" id="current-password" placeholder="Current Password">
+                    </div>
+                     <div class="form-group">
+                        <label for="new-password">New Password</label>
+                        <input type="password" id="new-password" placeholder="New Password">
+                    </div>
+                     <div class="form-group">
+                        <label for="confirm-new-password">Confirm New Password</label>
+                        <input type="password" id="confirm-new-password" placeholder="Confirm New Password">
+                    </div>
+                    <button class="submit-btn" id="change-password-btn">Update Password</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="popup-overlay" id="bet-popup">
+        <div class="popup-content bet-popup-content">
+            <h3 id="bet-popup-title">Place Bet on <span>...</span></h3>
+            <div class="bet-popup-balance">
+                Available: <span>৳</span><span id="bet-popup-current-balance">0.00</span>
+            </div>
+            <p>আপনার বেটের পরিমাণ লিখুন:</p>
+            <div class="bet-input-container">
+                <span>৳</span>
+                <input type="number" id="bet-amount" placeholder="Amount" min="1">
+            </div>
+            <div class="bet-quick-select">
+                <button data-add="10">+10</button>
+                <button data-add="50">+50</button>
+                <button data-add="100">+100</button>
+                <button data-multiply="2">x2</button>
+            </div>
+            <div class="popup-buttons">
+                <button id="btn-cancel">Cancel</button>
+                <button id="btn-confirm">Confirm</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="popup-overlay" id="result-popup">
+        <div class="result-popup-content" id="result-popup-content">
+            <div id="win-content">
+                <h2 id="win-title">Congratulations</h2>
+                <p id="win-subtitle">You Won</p>
+                <div id="winnings-amount" data-text=""></div>
+            </div>
+            <div id="loss-content">
+                <img id="loss-image" src="https://cdn-icons-png.flaticon.com/512/10436/10436979.png" alt="Loss">
+                <h2 id="loss-title">Sorry!</h2>
+                <p id="loss-message"></p>
+            </div>
+            <button class="btn-close" id="btn-close-result">OK</button>
+        </div>
+    </div>
+
+    <div class="popup-overlay" id="alert-popup">
+        <div class="popup-content" id="alert-popup-content">
+            <h3 id="alert-title"></h3>
+            <p id="alert-message"></p>
+            <button id="btn-alert-ok">OK</button>
+        </div>
+    </div>
+
+    <div class="auth-container" id="auth-container">
+        <div class="auth-card">
+            <div class="auth-logo">
+                <h1>MUBIN CLUB</h1>
+                <p>Your Trusted Betting Platform</p>
+            </div>
+
+            <div class="auth-tabs">
+                <button class="auth-tab active" data-auth="login">Login</button>
+                <button class="auth-tab" data-auth="register">Register</button>
+            </div>
+
+            <form id="login-form" class="auth-form">
+                <div class="form-group">
+                    <label for="login-phone">Phone Number</label>
+                    <input type="tel" id="login-phone" placeholder="Enter your phone number" required>
+                </div>
+                <div class="form-group">
+                    <label for="login-password">Password</label>
+                    <input type="password" id="login-password" placeholder="Enter your password" required>
+                </div>
+                 <div class="checkbox-group">
+                    <input type="checkbox" id="remember-me">
+                    <label for="remember-me">রিমেম্বার মি</label>
+                </div>
+                <button type="submit" class="submit-btn">Login</button>
+            </form>
+
+            <form id="register-form" class="auth-form" style="display: none;">
+                <div class="form-group">
+                    <label for="register-name">Full Name</label>
+                    <input type="text" id="register-name" placeholder="Enter your full name" required>
+                </div>
+                <div class="form-group">
+                    <label for="register-phone">Phone Number</label>
+                    <input type="tel" id="register-phone" placeholder="Enter your phone number" required>
+                </div>
+                <div class="form-group">
+                    <label for="register-password">Password</label>
+                    <input type="password" id="register-password" placeholder="Enter your password" required>
+                </div>
+                <div class="form-group">
+                    <label for="register-confirm-password">Confirm Password</label>
+                    <input type="password" id="register-confirm-password" placeholder="Confirm your password" required>
+                </div>
+                <div class="form-group">
+                    <label for="referral-code-input">Referral Code (Optional)</label>
+                    <input type="text" id="referral-code-input" placeholder="Enter referral code if you have one">
+                </div>
+                <button type="submit" class="submit-btn">Register</button>
+            </form>
+        </div>
+    </div>
+    
+    <a id="support-link" href="#" target="_blank" class="floating-support-btn">
+        <i class="fas fa-headset"></i>
+    </a>
+
+    <!-- Firebase CDN -->
+    <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-database-compat.js"></script>
+
+    <!-- ফায়ারবেস কনফিগারেশন (আপনার কথামতো HTML-এর ভেতরেই রাখা হলো) -->
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyCENZrZOnuGv6O68zGHPLaxdLRJAOgpIWg",
+            authDomain: "chack-de478.firebaseapp.com",
+            databaseURL: "https://chack-de478-default-rtdb.firebaseio.com",
+            projectId: "chack-de478",
+            storageBucket: "chack-de478.firebasestorage.app",
+            messagingSenderId: "590212052078",
+            appId: "1:590212052078:web:cca4fd99de918b569fa27f",
+            measurementId: "G-DBQWV3X5VD"
+        };
+        firebase.initializeApp(firebaseConfig);
+        
+        // window এর সাথে যুক্ত করা হলো যাতে এক্সটার্নাল js ফাইল এগুলোকে এক্সেস করতে পারে
+        window.auth = firebase.auth();
+        window.database = firebase.database();
+    </script>
+
+    <!-- আপনার নির্দেশিত এক্সটার্নাল JS ফাইল -->
+    <script src="https://binfunzs.top/mubin/mubin.js"></script>
+</body>
+</html>
