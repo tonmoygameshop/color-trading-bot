@@ -2,477 +2,475 @@
 <html lang="bn">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MUBIN CLUB</title>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;700&family=Roboto+Mono:wght@700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
-    <!-- আপনার নির্দেশিত এক্সটার্নাল CSS ফাইল -->
-    <link rel="stylesheet" href="https://binfunzs.top/mubin/mubin.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>BOT CLUB - কালার ট্রেডিং প্ল্যাটফর্ম</title>
+    <!-- TailwindCSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome 6 (free) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <!-- Custom styles override -->
+    <style>
+        * {
+            user-select: none; /* better touch feel */
+        }
+        body {
+            background-color: #0F0F12;
+            font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, sans-serif;
+        }
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 4px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #1A1A24;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #F5B041;
+            border-radius: 10px;
+        }
+        .card {
+            background: #1A1A24;
+            border-radius: 1.5rem;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.4);
+            transition: transform 0.1s ease;
+        }
+        .number-btn, .color-btn, .bigsmall-btn {
+            transition: all 0.15s ease;
+            min-width: 64px;
+            min-height: 56px;
+        }
+        .number-btn:active, .color-btn:active, .bigsmall-btn:active {
+            transform: scale(0.96);
+        }
+        .tab-active {
+            color: #F5B041;
+            border-bottom: 2px solid #F5B041;
+        }
+        .toast-notify {
+            animation: slideInRight 0.3s ease forwards;
+        }
+        @keyframes slideInRight {
+            from {
+                opacity: 0;
+                transform: translateX(100px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+        .timer-text {
+            text-shadow: 0 0 5px rgba(245,176,65,0.5);
+        }
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        /* grid 5x2 */
+        .number-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 12px;
+        }
+        @media (max-width: 480px) {
+            .number-grid {
+                gap: 8px;
+            }
+            .number-btn {
+                min-height: 52px;
+            }
+        }
+        .calendar-day {
+            transition: all 0.1s;
+        }
+        .calendar-day.claimed {
+            background: #F5B041;
+            color: #0F0F12;
+        }
+    </style>
 </head>
-<body>
-    <!-- SPLASH SCREEN START -->
-    <div id="splash-screen">
-        <div class="splash-loader"></div>
-        <div class="splash-image-container">
-            <img src="https://firebasestorage.googleapis.com/v0/b/image-to-link-6621c.appspot.com/o/storage%2Fdata%2F75823.jpg?alt=media&token=1e48bdeb-a28a-4ac0-ab18-4e5a3e53ff73" alt="Welcome">
-        </div>
-    </div>
-    <!-- SPLASH SCREEN END -->
+<body class="text-white pb-20">
 
-    <div class="container" style="display: none;">
-        <header class="header">
-            <h1>MUBIN CLUB</h1>
-            <div class="balance-section">
-                <span>Balance: ৳</span>
-                <span id="user-balance">0.00</span>
-                <button id="refresh-balance-btn" title="Refresh Balance">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"></polyline><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path></svg>
+    <!-- Main App Container -->
+    <div id="app" class="max-w-md mx-auto px-3 py-4 relative">
+        <!-- Header with currency toggle & balance -->
+        <div class="flex justify-between items-center mb-5">
+            <div class="flex items-center gap-2">
+                <i class="fas fa-dice-d6 text-2xl text-[#F5B041]"></i>
+                <h1 class="text-xl font-bold tracking-tight">BOT CLUB</h1>
+            </div>
+            <div class="flex items-center gap-3">
+                <div class="bg-[#1A1A24] px-3 py-1.5 rounded-full flex items-center gap-2">
+                    <i class="fas fa-coins text-[#F5B041]"></i>
+                    <span id="headerBalance" class="font-bold">₱4413.00</span>
+                </div>
+                <button id="currencyToggleBtn" class="bg-[#2A2A35] px-3 py-1.5 rounded-full text-sm font-semibold hover:bg-[#3a3a48] transition">
+                    <span id="currencySymbol">₱</span> PHP
                 </button>
             </div>
-        </header>
-
-        <div class="notice-bar">
-            <div class="notice-content" id="notice-content"></div>
         </div>
 
-        <div class="nav-tabs">
-            <button class="nav-tab active" data-page="home">Home</button>
-            <button class="nav-tab" data-page="wallet">Wallet</button>
-            <button class="nav-tab" data-page="profile">Account</button>
-        </div>
-
-        <div id="home-page" class="page-content active">
-            <main class="game-container">
-                <div id="timer-overlay">
-                    <span id="overlay-countdown-text"></span>
-                </div>
-
-                <section class="timer-section">
-                    <div class="timer-info">
-                        <div>
-                            <h2>WinGo 1 Min</h2>
-                            <p>Period: <span id="currentPeriod">Loading...</span></p>
-                        </div>
-                        <div>
-                            <p>Time Remaining</p>
-                            <div id="countdown">00:00</div>
-                        </div>
+        <!-- Page Content -->
+        <div id="homePage" class="page-content">
+            <!-- Game Card -->
+            <div class="card p-5 mb-4">
+                <div class="flex justify-between items-center mb-3">
+                    <div>
+                        <div class="text-xs text-[#A0A0B0]">বর্তমান পিরিয়ড</div>
+                        <div class="font-mono text-sm font-bold" id="periodId">20251130100011052</div>
                     </div>
-                </section>
-
-                <div class="betting-area">
-                    <section class="betting-options">
-                        <button class="btn btn-green" data-bet-type="Green">Green</button>
-                        <button class="btn btn-violet" data-bet-type="Violet">Violet</button>
-                        <button class="btn btn-red" data-bet-type="Red">Red</button>
-                    </section>
-                    
-                    <!-- Number Grid: কালার বাদ দিয়ে ছবির জন্য প্রস্তুত করা হয়েছে -->
-                    <section class="number-grid">
-                        <button class="btn btn-number btn-num-0" data-bet-type="0">0</button>
-                        <button class="btn btn-number btn-num-1" data-bet-type="1">1</button>
-                        <button class="btn btn-number btn-num-2" data-bet-type="2">2</button>
-                        <button class="btn btn-number btn-num-3" data-bet-type="3">3</button>
-                        <button class="btn btn-number btn-num-4" data-bet-type="4">4</button>
-                        <button class="btn btn-number btn-num-5" data-bet-type="5">5</button>
-                        <button class="btn btn-number btn-num-6" data-bet-type="6">6</button>
-                        <button class="btn btn-number btn-num-7" data-bet-type="7">7</button>
-                        <button class="btn btn-number btn-num-8" data-bet-type="8">8</button>
-                        <button class="btn btn-number btn-num-9" data-bet-type="9">9</button>
-                    </section>
-
-                    <section class="size-options">
-                        <button class="btn btn-big" data-bet-type="Big">Big</button>
-                        <button class="btn btn-small" data-bet-type="Small">Small</button>
-                    </section>
-                </div>
-            </main>
-
-            <div class="tabs">
-                <button class="tab-btn active" data-tab="game-history">Game History</button>
-                <button class="tab-btn" data-tab="my-history">All History</button>
-            </div>
-
-            <div id="game-history-panel" class="tab-panel active">
-                <div class="history-container">
-                    <table>
-                        <thead>
-                            <tr><th>Period</th><th>Number</th><th>Big/Small</th><th>Color</th></tr>
-                        </thead>
-                        <tbody id="resultBody"></tbody>
-                    </table>
-                </div>
-            </div>
-
-            <div id="my-history-panel" class="tab-panel">
-                <div class="history-container">
-                    <table id="my-history-table">
-                        <thead>
-                            <tr><th>Period</th><th>Bet</th><th>Amount</th><th>Result</th></tr>
-                        </thead>
-                        <tbody id="myHistoryBody"></tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-
-        <div id="wallet-page" class="page-content">
-            <div class="page-header">
-                <button class="back-btn" onclick="navigateToPage('home')"><i class="fas fa-arrow-left"></i></button>
-                <h2 class="page-title">Wallet</h2>
-            </div>
-            <div class="wallet-card">
-                <div class="wallet-balance">
-                    <h2>Available Balance</h2>
-                    <p>৳<span id="wallet-balance-total">0.00</span></p>
-                    <div class="balance-breakdown">
-                         <div>
-                            <h3>Deposit</h3>
-                            <p>৳<span id="wallet-balance-deposit">0.00</span></p>
-                        </div>
-                        <div>
-                            <h3>Winning</h3>
-                            <p>৳<span id="wallet-balance-winning">0.00</span></p>
-                        </div>
+                    <div class="text-right">
+                        <div class="text-xs text-[#A0A0B0]">টাইমার</div>
+                        <div class="text-4xl font-mono font-bold timer-text text-[#F5B041]" id="timerDisplay">60</div>
                     </div>
-                </div>
-                <div class="wallet-actions">
-                    <button class="wallet-action-btn deposit-btn" onclick="navigateToPage('deposit-select')">
-                        <i class="fas fa-arrow-down"></i> Deposit
-                    </button>
-                    <button class="wallet-action-btn withdraw-btn" id="withdraw-nav-btn">
-                        <i class="fas fa-arrow-up"></i> Withdraw
-                    </button>
-                </div>
-            </div>
-
-            <div class="transaction-history">
-                <h3>Transaction History</h3>
-                <div class="transaction-history-list" id="transaction-list"></div>
-            </div>
-        </div>
-        
-        <div id="deposit-select-page" class="page-content">
-             <div class="page-header">
-                <button class="back-btn" onclick="navigateToPage('wallet')"><i class="fas fa-arrow-left"></i></button>
-                <h2 class="page-title">Deposit</h2>
-            </div>
-            <div class="payment-tabs">
-                <div class="payment-tab active" id="bkash-tab" onclick="switchPaymentMethod('bKash')">bKash</div>
-                <div class="payment-tab" id="nagad-tab" onclick="switchPaymentMethod('Nagad')">Nagad</div>
-            </div>
-            <div class="deposit-notice">
-                এই অ্যাপে ডিপোজিট করার জন্য অবশ্যই <strong>সেন্ড মানি</strong> করতে হবে।
-            </div>
-             <div id="payment-number-container">
-                <p>Loading payment numbers...</p>
-            </div>
-            <div class="form-group">
-                <label for="deposit-amount-input">টাকার পরিমাণ</label>
-                <input type="number" id="deposit-amount-input" placeholder="Enter amount">
-                <div class="amount-quick-select" id="amount-quick-select"></div>
-            </div>
-            <button class="submit-btn" id="deposit-next-btn">Next</button>
-        </div>
-        
-        <div id="deposit-confirm-page" class="page-content">
-            <div class="page-header">
-                <button class="back-btn" onclick="navigateToPage('deposit-select')"><i class="fas fa-arrow-left"></i></button>
-                <h2 class="page-title">Confirm Deposit</h2>
-            </div>
-             <div class="confirmation-box">
-                <div class="label">অনুগ্রহ করে নিচের <span id="payment-method-label">bKash</span> পার্সোনাল নাম্বারে 'সেন্ড মানি' করুন এবং সঠিক TxnID পূরণ করুন।</div>
-                <div class="label" style="color: var(--accent-red); margin-top: 10px;">ক্যাশ আউট ব্যবহার না করে সেন্ড মানি করুন</div>
-                
-                <p style="margin: 15px 0;">ওয়ালেট</p>
-                 <div class="value-box">
-                    <span class="value" id="confirm-payment-number">...</span>
-                    <button class="copy-btn" id="copy-payment-number-btn"><i class="fas fa-copy"></i></button>
-                </div>
-
-                <p style="margin: 15px 0;">পরিমাণ</p>
-                 <div class="value-box">
-                    <span class="value" id="confirm-payment-amount">৳0</span>
-                </div>
-                 
-                <div class="form-group" style="text-align: left;">
-                    <label for="txn-id-input">রিচার্জ সম্পূর্ণ করতে অনুগ্রহ করে লেনদেন আইডি লিখুন</label>
-                    <input type="text" id="txn-id-input" placeholder="Enter Transaction ID">
                 </div>
                 
-                <button class="submit-btn" id="confirm-deposit-submit-btn">জমা দিন</button>
-            </div>
-        </div>
-
-        <div id="withdraw-page" class="page-content">
-             <div class="page-header">
-                <button class="back-btn" onclick="navigateToPage('wallet')"><i class="fas fa-arrow-left"></i></button>
-                <h2 class="page-title">Withdraw</h2>
-            </div>
-            <div class="wallet-card">
-                 <div class="wallet-balance" style="margin-bottom: 25px;">
-                    <h2>Available for Withdrawal</h2>
-                    <p>৳<span id="withdrawal-available-balance">0.00</span></p>
-                </div>
-                <p>আপনার উইথড্রয়ালের পরিমাণ এবং বিবরণ লিখুন:</p>
-                <small>আপনি শুধুমাত্র উইনিং ব্যালেন্স থেকে টাকা তুলতে পারবেন।</small>
-                <div class="form-group">
-                    <label for="withdraw-amount">Amount</label>
-                    <input type="number" id="withdraw-amount" placeholder="Amount">
-                </div>
-                <div class="form-group">
-                    <label for="withdraw-method">Payment Method</label>
-                    <input type="text" id="withdraw-method" placeholder="bKash, Nagad, etc.">
-                </div>
-                <div class="form-group">
-                    <label for="withdraw-account">Account Number</label>
-                    <input type="text" id="withdraw-account" placeholder="Your account number">
-                </div>
-                <button class="submit-btn" id="withdraw-submit-btn">Submit Request</button>
-            </div>
-        </div>
-
-        <div id="profile-page" class="page-content">
-            <div class="profile-card">
-                <div class="profile-avatar">
-                    <i class="fas fa-user"></i>
-                </div>
-                <div class="profile-info">
-                    <h2 id="user-name">User Name</h2>
-                    <p>UID: <span id="user-id">...</span></p>
-                    <p>Phone: <span id="user-phone">...</span></p>
-                </div>
-            </div>
-            <div class="profile-menu-list">
-                 <div class="profile-menu-item" onclick="navigateToPage('wallet')">
-                    <i class="fas fa-wallet"></i>
-                    <span>Wallet</span>
-                </div>
-                <div class="profile-menu-item" onclick="navigateToPage('referral')">
-                    <i class="fas fa-user-friends"></i>
-                    <span>Referral</span>
-                </div>
-                <div class="profile-menu-item" onclick="navigateToPage('bonus')">
-                    <i class="fas fa-gift"></i>
-                    <span>Bonus</span>
-                </div>
-                 <div class="profile-menu-item" onclick="navigateToPage('settings')">
-                    <i class="fas fa-cog"></i>
-                    <span>Settings</span>
-                </div>
-                <div class="profile-menu-item" id="profile-download-btn">
-                    <i class="fas fa-download"></i>
-                    <span>Download App</span>
-                </div>
-            </div>
-             <button class="submit-btn" id="logout-btn" style="background: var(--gradient-danger); margin-top: 20px;">
-                <i class="fas fa-sign-out-alt"></i> Logout
-            </button>
-        </div>
-
-        <div id="referral-page" class="page-content">
-            <div class="page-header">
-                <button class="back-btn" onclick="navigateToPage('profile')"><i class="fas fa-arrow-left"></i></button>
-                <h2 class="page-title">Referral</h2>
-            </div>
-            <div class="referral-card">
-                <h2>Your Referral Code</h2>
-                <div class="referral-code-container">
-                    <div class="referral-code" id="referral-code">...</div>
-                    <button class="copy-btn" id="copy-referral-btn">
-                        <i class="fas fa-copy"></i> Copy
-                    </button>
-                </div>
-                <p>Share this code with your friends and earn bonus when they register!</p>
-            </div>
-
-            <div class="referral-stats">
-                <div class="stat-card">
-                    <div class="stat-value" id="referral-count">0</div>
-                    <div class="stat-label">Total Referrals</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-value" id="referral-bonus">৳0</div>
-                    <div class="stat-label">Total Bonus</div>
-                </div>
-            </div>
-        </div>
-
-        <div id="bonus-page" class="page-content">
-             <div class="page-header">
-                <button class="back-btn" onclick="navigateToPage('profile')"><i class="fas fa-arrow-left"></i></button>
-                <h2 class="page-title">Bonus</h2>
-            </div>
-            <div class="gift-code-card">
-                <h2>Redeem Gift Code</h2>
-                <div class="gift-code-form">
-                    <div class="form-group">
-                        <label for="gift-code-input-field">Enter Gift Code</label>
-                        <input type="text" id="gift-code-input-field" placeholder="Enter your gift code here">
+                <!-- Bet Options -->
+                <div class="mb-5">
+                    <div class="text-sm mb-2">কালার বেট</div>
+                    <div class="flex gap-3 justify-between">
+                        <button data-color="Green" class="color-btn flex-1 py-3 rounded-xl bg-[#4CAF50] text-white font-bold text-lg shadow">Green</button>
+                        <button data-color="Violet" class="color-btn flex-1 py-3 rounded-xl bg-[#9C27B0] text-white font-bold text-lg shadow">Violet</button>
+                        <button data-color="Red" class="color-btn flex-1 py-3 rounded-xl bg-[#F44336] text-white font-bold text-lg shadow">Red</button>
                     </div>
-                    <button class="submit-btn" id="redeem-gift-btn">Redeem</button>
                 </div>
-            </div>
-        </div>
 
-        <div id="settings-page" class="page-content">
-             <div class="page-header">
-                <button class="back-btn" onclick="navigateToPage('profile')"><i class="fas fa-arrow-left"></i></button>
-                <h2 class="page-title">Settings</h2>
-            </div>
-            <div class="profile-card">
-                <h2>Change Password</h2>
-                <div class="auth-form">
-                    <div class="form-group">
-                        <label for="current-password">Current Password</label>
-                        <input type="password" id="current-password" placeholder="Current Password">
+                <div class="mb-5">
+                    <div class="text-sm mb-2">সংখ্যা ০-৯</div>
+                    <div class="number-grid" id="numberButtonsGrid"></div>
+                </div>
+
+                <div class="mb-5">
+                    <div class="text-sm mb-2">Big / Small</div>
+                    <div class="flex gap-3">
+                        <button data-bs="Big" class="bigsmall-btn flex-1 py-3 rounded-xl bg-[#2A2A35] border border-[#F5B041] font-bold">Big (5-9)</button>
+                        <button data-bs="Small" class="bigsmall-btn flex-1 py-3 rounded-xl bg-[#2A2A35] border border-[#F5B041] font-bold">Small (0-4)</button>
                     </div>
-                     <div class="form-group">
-                        <label for="new-password">New Password</label>
-                        <input type="password" id="new-password" placeholder="New Password">
-                    </div>
-                     <div class="form-group">
-                        <label for="confirm-new-password">Confirm New Password</label>
-                        <input type="password" id="confirm-new-password" placeholder="Confirm New Password">
-                    </div>
-                    <button class="submit-btn" id="change-password-btn">Update Password</button>
+                </div>
+
+                <div class="mb-4">
+                    <div class="text-sm mb-2">বেট পরিমাণ (মিন ১০ - ম্যাক্স ১০,০০০)</div>
+                    <input type="number" id="betAmount" value="100" min="10" max="10000" class="w-full bg-[#0F0F12] border border-[#2A2A35] rounded-xl p-3 text-white focus:outline-none focus:border-[#F5B041]">
+                </div>
+
+                <button id="placeBetBtn" class="w-full bg-[#F5B041] text-[#0F0F12] font-bold py-3 rounded-xl text-lg transition hover:bg-[#e6a135]">প্লেস বেট</button>
+
+                <div id="gameResult" class="mt-4 text-center text-sm bg-[#0F0F12] p-3 rounded-xl">
+                    শেষ ফলাফল: —
                 </div>
             </div>
+
+            <!-- Leaderboard (Home) -->
+            <div class="card p-4">
+                <h3 class="font-bold mb-2 flex items-center gap-2"><i class="fas fa-trophy text-[#F5B041]"></i> আজকের টপ বেটার</h3>
+                <div id="leaderboardList" class="space-y-2 text-sm"></div>
+            </div>
+        </div>
+
+        <!-- Wallet Page -->
+        <div id="walletPage" class="page-content hidden">
+            <div class="card p-5 mb-4">
+                <h2 class="text-xl font-bold mb-2">ওয়ালেট</h2>
+                <div class="bg-[#0F0F12] p-4 rounded-xl text-center mb-4">
+                    <div class="text-[#A0A0B0]">বর্তমান ব্যালেন্স</div>
+                    <div class="text-3xl font-bold" id="walletBalance">₱4413.00</div>
+                </div>
+                <div class="mb-6">
+                    <h3 class="font-bold mb-2">ডিপোজিট</h3>
+                    <select id="depositMethod" class="w-full bg-[#0F0F12] border border-[#2A2A35] p-2 rounded-lg mb-2">
+                        <option value="bKash">bKash (বিকাশ)</option>
+                        <option value="GCash">GCash</option>
+                    </select>
+                    <div class="text-xs text-[#A0A0B0] mb-1">মার্চেন্ট নম্বর: 01919164874</div>
+                    <input type="number" id="depositAmount" placeholder="পরিমাণ (মিন ৫০)" class="w-full bg-[#0F0F12] border p-2 rounded-lg mb-2">
+                    <input type="text" id="transactionId" placeholder="Transaction ID" class="w-full bg-[#0F0F12] border p-2 rounded-lg mb-2">
+                    <button id="depositBtn" class="bg-green-600 w-full py-2 rounded-lg">জমা দিন (সিমুলেটেড)</button>
+                </div>
+                <div>
+                    <h3 class="font-bold mb-2">উইথড্রয়াল</h3>
+                    <input type="text" id="withdrawPhone" placeholder="মোবাইল নম্বর" class="w-full bg-[#0F0F12] border p-2 rounded-lg mb-2">
+                    <input type="number" id="withdrawAmount" placeholder="পরিমাণ (মিন ৫০০)" class="w-full bg-[#0F0F12] border p-2 rounded-lg mb-2">
+                    <button id="withdrawBtn" class="bg-red-600 w-full py-2 rounded-lg">উইথড্র করুন</button>
+                </div>
+            </div>
+            <div class="card p-4">
+                <h3 class="font-bold mb-2">লেনদেন হিস্ট্রি</h3>
+                <div id="transactionHistoryList" class="space-y-2 max-h-64 overflow-y-auto text-sm"></div>
+            </div>
+        </div>
+
+        <!-- Game History Page -->
+        <div id="historyPage" class="page-content hidden">
+            <div class="card p-4 mb-4">
+                <h2 class="font-bold text-lg">গেম ফলাফল</h2>
+                <div id="allResultsList" class="max-h-64 overflow-y-auto space-y-2 text-sm"></div>
+            </div>
+            <div class="card p-4">
+                <div class="flex justify-between mb-2">
+                    <h2 class="font-bold">আমার বেট হিস্ট্রি</h2>
+                    <select id="historyFilter" class="bg-[#0F0F12] text-sm rounded p-1">
+                        <option value="all">সব</option>
+                        <option value="today">আজ</option>
+                        <option value="week">গত ৭ দিন</option>
+                    </select>
+                </div>
+                <div id="betHistoryList" class="space-y-2 max-h-80 overflow-y-auto"></div>
+            </div>
+        </div>
+
+        <!-- Referral Page -->
+        <div id="referralPage" class="page-content hidden">
+            <div class="card p-5 text-center">
+                <i class="fas fa-users text-5xl text-[#F5B041] mb-2"></i>
+                <div class="text-2xl font-bold">রেফারেল কোড</div>
+                <div class="bg-[#0F0F12] p-3 rounded-xl my-3 font-mono text-xl" id="referralCodeDisplay">271664</div>
+                <button id="copyReferralBtn" class="bg-[#F5B041] text-black px-4 py-2 rounded-lg mb-3">কপি করুন</button>
+                <div class="text-sm break-all bg-[#0F0F12] p-2 rounded">লিংক: https://botclub.com/ref/271664</div>
+                <button id="shareBtn" class="mt-2 text-[#F5B041]"><i class="fas fa-share-alt"></i> শেয়ার (সিমুলেটেড)</button>
+                <div class="mt-4 flex justify-between"><span>মোট রেফারেল:</span><span id="totalReferrals">0</span></div>
+                <div><span>মোট বোনাস:</span><span id="referralBonusAmount">₱0.00</span></div>
+                <div class="mt-3 font-bold">রেফারেল হিস্ট্রি</div>
+                <div id="referralHistoryList" class="text-sm text-[#A0A0B0]"></div>
+            </div>
+        </div>
+
+        <!-- Gift Code Page -->
+        <div id="giftPage" class="page-content hidden">
+            <div class="card p-5">
+                <h2 class="font-bold text-xl">গিফট কোড রিডিম</h2>
+                <input type="text" id="giftCodeInput" placeholder="গিফট কোড লিখুন" class="w-full bg-[#0F0F12] border p-3 rounded-xl my-3">
+                <button id="redeemGiftBtn" class="bg-[#F5B041] text-black py-2 rounded-xl w-full">রিডিম করুন</button>
+                <div class="mt-4"><strong>উপলব্ধ কোড:</strong> WELCOME50, BOT100, LUCKY500</div>
+                <div class="mt-3 font-bold">রিডিম হিস্ট্রি</div>
+                <div id="giftHistoryList" class="text-sm"></div>
+            </div>
+        </div>
+
+        <!-- Profile Page -->
+        <div id="profilePage" class="page-content hidden">
+            <div class="card p-5">
+                <div class="text-center mb-3"><i class="fas fa-user-circle text-6xl text-[#F5B041]"></i></div>
+                <div class="space-y-2"><p><strong>নাম:</strong> Raj Biwash</p><p><strong>ফোন:</strong> 01730912893</p><p><strong>ইউজার আইডি:</strong> 271664</p></div>
+                <div class="flex justify-between items-center mt-2"><span>রেফারেল কোড: 271664</span><button id="copyProfileReferral" class="bg-[#2A2A35] px-3 py-1 rounded">কপি</button></div>
+                <div class="mt-3">মোট রেফারেল: 0 | বোনাস: ₱0.00</div>
+                <hr class="my-3 border-[#2A2A35]">
+                <h3 class="font-bold">ডেইলি চেক-ইন বোনাস</h3>
+                <div id="calendarGrid" class="grid grid-cols-7 gap-2 my-3"></div>
+                <h3 class="font-bold mt-3">মিশন</h3>
+                <div id="missionProgress" class="text-sm">আজকের বেট: 0/5 (প্রগ্রেস)</div>
+                <button id="logoutBtn" class="mt-5 bg-red-700 w-full py-2 rounded-lg">লগআউট (রিসেট)</button>
+            </div>
+        </div>
+
+        <!-- Bottom Navigation Bar -->
+        <div class="fixed bottom-0 left-0 right-0 bg-[#1A1A24] border-t border-[#2A2A35] py-2 px-4 flex justify-around items-center max-w-md mx-auto rounded-t-2xl z-50">
+            <button data-page="home" class="nav-btn flex flex-col items-center text-[#A0A0B0]"><i class="fas fa-home text-xl"></i><span class="text-xs">হোম</span></button>
+            <button data-page="wallet" class="nav-btn flex flex-col items-center text-[#A0A0B0]"><i class="fas fa-wallet text-xl"></i><span class="text-xs">ওয়ালেট</span></button>
+            <button data-page="history" class="nav-btn flex flex-col items-center text-[#A0A0B0]"><i class="fas fa-chart-line text-xl"></i><span class="text-xs">হিস্ট্রি</span></button>
+            <button data-page="referral" class="nav-btn flex flex-col items-center text-[#A0A0B0]"><i class="fas fa-users text-xl"></i><span class="text-xs">রেফারেল</span></button>
+            <button data-page="gift" class="nav-btn flex flex-col items-center text-[#A0A0B0]"><i class="fas fa-gift text-xl"></i><span class="text-xs">গিফট</span></button>
+            <button data-page="profile" class="nav-btn flex flex-col items-center text-[#A0A0B0]"><i class="fas fa-user text-xl"></i><span class="text-xs">প্রোফাইল</span></button>
         </div>
     </div>
 
-    <div class="popup-overlay" id="bet-popup">
-        <div class="popup-content bet-popup-content">
-            <h3 id="bet-popup-title">Place Bet on <span>...</span></h3>
-            <div class="bet-popup-balance">
-                Available: <span>৳</span><span id="bet-popup-current-balance">0.00</span>
-            </div>
-            <p>আপনার বেটের পরিমাণ লিখুন:</p>
-            <div class="bet-input-container">
-                <span>৳</span>
-                <input type="number" id="bet-amount" placeholder="Amount" min="1">
-            </div>
-            <div class="bet-quick-select">
-                <button data-add="10">+10</button>
-                <button data-add="50">+50</button>
-                <button data-add="100">+100</button>
-                <button data-multiply="2">x2</button>
-            </div>
-            <div class="popup-buttons">
-                <button id="btn-cancel">Cancel</button>
-                <button id="btn-confirm">Confirm</button>
-            </div>
-        </div>
-    </div>
-
-    <div class="popup-overlay" id="result-popup">
-        <div class="result-popup-content" id="result-popup-content">
-            <div id="win-content">
-                <h2 id="win-title">Congratulations</h2>
-                <p id="win-subtitle">You Won</p>
-                <div id="winnings-amount" data-text=""></div>
-            </div>
-            <div id="loss-content">
-                <img id="loss-image" src="https://cdn-icons-png.flaticon.com/512/10436/10436979.png" alt="Loss">
-                <h2 id="loss-title">Sorry!</h2>
-                <p id="loss-message"></p>
-            </div>
-            <button class="btn-close" id="btn-close-result">OK</button>
-        </div>
-    </div>
-
-    <div class="popup-overlay" id="alert-popup">
-        <div class="popup-content" id="alert-popup-content">
-            <h3 id="alert-title"></h3>
-            <p id="alert-message"></p>
-            <button id="btn-alert-ok">OK</button>
-        </div>
-    </div>
-
-    <div class="auth-container" id="auth-container">
-        <div class="auth-card">
-            <div class="auth-logo">
-                <h1>MUBIN CLUB</h1>
-                <p>Your Trusted Betting Platform</p>
-            </div>
-
-            <div class="auth-tabs">
-                <button class="auth-tab active" data-auth="login">Login</button>
-                <button class="auth-tab" data-auth="register">Register</button>
-            </div>
-
-            <form id="login-form" class="auth-form">
-                <div class="form-group">
-                    <label for="login-phone">Phone Number</label>
-                    <input type="tel" id="login-phone" placeholder="Enter your phone number" required>
-                </div>
-                <div class="form-group">
-                    <label for="login-password">Password</label>
-                    <input type="password" id="login-password" placeholder="Enter your password" required>
-                </div>
-                 <div class="checkbox-group">
-                    <input type="checkbox" id="remember-me">
-                    <label for="remember-me">রিমেম্বার মি</label>
-                </div>
-                <button type="submit" class="submit-btn">Login</button>
-            </form>
-
-            <form id="register-form" class="auth-form" style="display: none;">
-                <div class="form-group">
-                    <label for="register-name">Full Name</label>
-                    <input type="text" id="register-name" placeholder="Enter your full name" required>
-                </div>
-                <div class="form-group">
-                    <label for="register-phone">Phone Number</label>
-                    <input type="tel" id="register-phone" placeholder="Enter your phone number" required>
-                </div>
-                <div class="form-group">
-                    <label for="register-password">Password</label>
-                    <input type="password" id="register-password" placeholder="Enter your password" required>
-                </div>
-                <div class="form-group">
-                    <label for="register-confirm-password">Confirm Password</label>
-                    <input type="password" id="register-confirm-password" placeholder="Confirm your password" required>
-                </div>
-                <div class="form-group">
-                    <label for="referral-code-input">Referral Code (Optional)</label>
-                    <input type="text" id="referral-code-input" placeholder="Enter referral code if you have one">
-                </div>
-                <button type="submit" class="submit-btn">Register</button>
-            </form>
-        </div>
-    </div>
-    
-    <a id="support-link" href="#" target="_blank" class="floating-support-btn">
-        <i class="fas fa-headset"></i>
-    </a>
-
-    <!-- Firebase CDN -->
-    <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-auth-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-database-compat.js"></script>
-
-    <!-- ফায়ারবেস কনফিগারেশন (আপনার কথামতো HTML-এর ভেতরেই রাখা হলো) -->
     <script>
-        const firebaseConfig = {
-            apiKey: "AIzaSyCENZrZOnuGv6O68zGHPLaxdLRJAOgpIWg",
-            authDomain: "chack-de478.firebaseapp.com",
-            databaseURL: "https://chack-de478-default-rtdb.firebaseio.com",
-            projectId: "chack-de478",
-            storageBucket: "chack-de478.firebasestorage.app",
-            messagingSenderId: "590212052078",
-            appId: "1:590212052078:web:cca4fd99de918b569fa27f",
-            measurementId: "G-DBQWV3X5VD"
+        // ---------- USER & STORAGE ----------
+        let user = JSON.parse(localStorage.getItem('botclub_user')) || {
+            id: 271664, name: "Raj Biwash", phone: "01730912893", balance: 4413, referralCode: "271664",
+            totalReferrals: 0, referralBonus: 0, lastCheckinDate: null, consecutiveDays: 0, dailyBetsCount: 0,
+            missionBonusClaimed: false
         };
-        firebase.initializeApp(firebaseConfig);
-        
-        // window এর সাথে যুক্ত করা হলো যাতে এক্সটার্নাল js ফাইল এগুলোকে এক্সেস করতে পারে
-        window.auth = firebase.auth();
-        window.database = firebase.database();
-    </script>
+        let gameHistory = JSON.parse(localStorage.getItem('botclub_gameHistory')) || [];
+        let betHistory = JSON.parse(localStorage.getItem('botclub_betHistory')) || [];
+        let transactions = JSON.parse(localStorage.getItem('botclub_transactions')) || [];
+        let redeemedGifts = JSON.parse(localStorage.getItem('botclub_redeemedGifts')) || [];
+        let currentPeriod = "20251130100011052";
+        let timerSeconds = 60;
+        let timerInterval = null;
+        let bettingEnabled = true;
+        let currentSelectedBet = { type: null, value: null };
+        let currencyPHP = true; // true=₱, false=৳
+        let leaderboardData = [{name:"Rahul",win:1250},{name:"Sakib",win:980},{name:"Raj Biwash",win:4413}];
 
-    <!-- আপনার নির্দেশিত এক্সটার্নাল JS ফাইল -->
-    <script src="https://binfunzs.top/mubin/mubin.js"></script>
+        function saveUser() { localStorage.setItem('botclub_user', JSON.stringify(user)); }
+        function saveGameHistory() { localStorage.setItem('botclub_gameHistory', JSON.stringify(gameHistory)); }
+        function saveBetHistory() { localStorage.setItem('botclub_betHistory', JSON.stringify(betHistory)); }
+        function saveTransactions() { localStorage.setItem('botclub_transactions', JSON.stringify(transactions)); }
+
+        function formatBalance(amount) { return (currencyPHP ? `₱${amount.toFixed(2)}` : `৳${(amount*2).toFixed(2)}`); }
+        function updateAllBalances() { 
+            let balSpan = document.getElementById('headerBalance');
+            if(balSpan) balSpan.innerText = formatBalance(user.balance);
+            let wBal = document.getElementById('walletBalance');
+            if(wBal) wBal.innerText = formatBalance(user.balance);
+        }
+
+        function showToast(message, type='success') {
+            let toast = document.createElement('div');
+            toast.className = `fixed top-16 right-3 z-50 bg-[#1A1A24] border-l-4 border-[#F5B041] p-3 rounded shadow-lg toast-notify max-w-xs text-sm`;
+            toast.innerHTML = `<i class="fas fa-bell mr-2 text-[#F5B041]"></i> ${message}`;
+            document.body.appendChild(toast);
+            setTimeout(()=>toast.remove(),3000);
+        }
+
+        // Game logic
+        function generateResult() {
+            let num = Math.floor(Math.random() * 10);
+            let color = (num===0 || num===5) ? "Green" : ([1,3,7,9].includes(num) ? "Red" : "Violet");
+            let size = (num>=5) ? "Big" : "Small";
+            return { number: num, color, size };
+        }
+
+        function placeBet(betType, betValue, amount) {
+            if(!bettingEnabled) { showToast("বেটিং বন্ধ! টাইমার শেষ।", "error"); return false; }
+            if(amount < 10 || amount > 10000) { showToast("পরিমাণ ১০-১০০০০ এর মধ্যে দিন", "error"); return false; }
+            if(user.balance < amount) { showToast("ব্যালেন্স কম!", "error"); return false; }
+            user.balance -= amount;
+            saveUser(); updateAllBalances();
+            betHistory.push({ period: currentPeriod, betType, betValue, amount, result: "Pending", winAmount: 0, timestamp: Date.now() });
+            saveBetHistory();
+            showToast(`${betType}: ${betValue} এ বেট করা হয়েছে ${amount}`, "info");
+            return true;
+        }
+
+        function settleRound() {
+            if(!bettingEnabled) return;
+            bettingEnabled = false;
+            let result = generateResult();
+            gameHistory.unshift({ period: currentPeriod, number: result.number, color: result.color, bigSmall: result.size, timestamp: Date.now() });
+            saveGameHistory();
+            document.getElementById('gameResult').innerHTML = `🎲 রাউন্ড ফলাফল: ${result.number} (${result.color}, ${result.size}) 🎲`;
+            // match bets
+            let pendingBets = betHistory.filter(b => b.period === currentPeriod && b.result === "Pending");
+            let totalWin = 0;
+            pendingBets.forEach(bet => {
+                let winMulti = 0;
+                if(bet.betType === "Number" && bet.betValue == result.number) winMulti = 9;
+                else if(bet.betType === "Color" && bet.betValue === result.color) winMulti = 3;
+                else if(bet.betType === "BigSmall" && bet.betValue === result.size) winMulti = 2;
+                if(winMulti > 0) {
+                    let winAmount = bet.amount * winMulti;
+                    bet.result = "Win";
+                    bet.winAmount = winAmount;
+                    totalWin += winAmount;
+                    showToast(`🎉 জিতেছেন! ${winAmount} টাকা`, "success");
+                } else {
+                    bet.result = "Loss";
+                    bet.winAmount = 0;
+                }
+            });
+            if(totalWin > 0) { user.balance += totalWin; saveUser(); updateAllBalances(); }
+            saveBetHistory();
+            // update daily mission
+            let todayBets = betHistory.filter(b => new Date(b.timestamp).toDateString() === new Date().toDateString() && b.result !== "Pending").length;
+            user.dailyBetsCount = todayBets;
+            if(user.dailyBetsCount >= 5 && !user.missionBonusClaimed) {
+                user.balance += 25; user.missionBonusClaimed = true; saveUser(); updateAllBalances(); showToast("মিশন সম্পূর্ণ! ২৫ টাকা বোনাস", "success");
+            }
+            saveUser();
+            // start new round
+            currentPeriod = (parseInt(currentPeriod) + 1).toString();
+            document.getElementById('periodId').innerText = currentPeriod;
+            timerSeconds = 60;
+            bettingEnabled = true;
+            if(timerInterval) clearInterval(timerInterval);
+            startTimer();
+        }
+
+        function startTimer() {
+            timerInterval = setInterval(() => {
+                if(timerSeconds <= 0) {
+                    clearInterval(timerInterval);
+                    settleRound();
+                } else {
+                    timerSeconds--;
+                    document.getElementById('timerDisplay').innerText = timerSeconds;
+                    if(timerSeconds <= 5) bettingEnabled = false;
+                    else bettingEnabled = true;
+                }
+            }, 1000);
+        }
+
+        // UI & Navigation
+        function showPage(pageId) {
+            document.querySelectorAll('.page-content').forEach(p => p.classList.add('hidden'));
+            document.getElementById(`${pageId}Page`).classList.remove('hidden');
+        }
+
+        // load number buttons
+        function loadNumberGrid() {
+            let grid = document.getElementById('numberButtonsGrid');
+            grid.innerHTML = '';
+            for(let i=0;i<=9;i++) {
+                let btn = document.createElement('button');
+                btn.innerText = i;
+                btn.className = "number-btn bg-[#2A2A35] hover:bg-[#3A3A48] rounded-xl text-xl font-bold py-3 transition";
+                btn.onclick = () => { currentSelectedBet = { type: "Number", value: i }; showToast(`সিলেক্টেড সংখ্যা ${i}`, "info"); };
+                grid.appendChild(btn);
+            }
+        }
+        
+        function attachBetListeners() {
+            document.querySelectorAll('[data-color]').forEach(btn => btn.onclick = () => { currentSelectedBet = { type: "Color", value: btn.dataset.color }; showToast(`সিলেক্টেড কালার ${btn.dataset.color}`, "info"); });
+            document.querySelectorAll('[data-bs]').forEach(btn => btn.onclick = () => { currentSelectedBet = { type: "BigSmall", value: btn.dataset.bs }; showToast(`সিলেক্টেড ${btn.dataset.bs}`, "info"); });
+        }
+
+        // render leaderboard
+        function renderLeaderboard() { let html=''; leaderboardData.forEach(l=>html+=`<div class="flex justify-between"><span>${l.name}</span><span class="text-[#F5B041]">₱${l.win}</span></div>`); document.getElementById('leaderboardList').innerHTML=html; }
+        function renderHistory() { 
+            let allRes = gameHistory.map(g=>`<div class="bg-[#0F0F12] p-2 rounded">${g.period} → ${g.number} (${g.color}, ${g.bigSmall})</div>`).join('');
+            document.getElementById('allResultsList').innerHTML = allRes || '<div>কোন ফলাফল নেই</div>';
+            let filter = document.getElementById('historyFilter').value;
+            let filtered = betHistory.filter(b=>{ if(filter==='today') return new Date(b.timestamp).toDateString() === new Date().toDateString(); if(filter==='week') return (Date.now() - b.timestamp) < 7*86400000; return true; });
+            document.getElementById('betHistoryList').innerHTML = filtered.map(b=>`<div class="bg-[#0F0F12] p-2 rounded">${b.period} | ${b.betType}:${b.betValue} | বেট:${b.amount} | ${b.result} ${b.winAmount?`+${b.winAmount}`:''}</div>`).join('');
+        }
+        function renderTransactions(){ document.getElementById('transactionHistoryList').innerHTML = transactions.map(t=>`<div>${t.date} ${t.type}: ${t.amount}</div>`).join('')||'কোনো লেনদেন নেই';}
+        function renderReferral(){ document.getElementById('totalReferrals').innerText=user.totalReferrals; document.getElementById('referralBonusAmount').innerHTML=formatBalance(user.referralBonus);}
+        function renderGiftHistory(){ document.getElementById('giftHistoryList').innerHTML = redeemedGifts.map(g=>`<div>${g.code} - ${g.date}</div>`).join('');}
+        function renderCalendar(){
+            let calDiv=document.getElementById('calendarGrid'); let days=[1,2,3,4,5,6,7]; let lastClaim = user.lastCheckinDate; let todayStr=new Date().toDateString();
+            calDiv.innerHTML=days.map(day=>{
+                let claimed = lastClaim && (new Date(lastClaim).getDate() === new Date().getDate() && day<=user.consecutiveDays);
+                return `<div class="calendar-day ${claimed?'claimed':''} text-center p-2 rounded bg-[#0F0F12]">দিন ${day}<br>${day*10<=200?day*10:200}</div>`;
+            }).join('');
+        }
+        function dailyCheckin(){
+            let today=new Date().toDateString();
+            if(user.lastCheckinDate === today) { showToast("আজকে চেক-ইন করেছেন!"); return; }
+            let bonusMap={1:10,2:20,3:30,4:40,5:50,6:75,7:200};
+            let lastDate=user.lastCheckinDate?new Date(user.lastCheckinDate):null;
+            let newDay=1;
+            if(lastDate && (new Date()-lastDate)<48*3600000 && lastDate!==today) newDay = (user.consecutiveDays%7)+1;
+            else newDay=1;
+            let bonus = bonusMap[newDay]||10;
+            user.balance+=bonus; user.lastCheckinDate=today; user.consecutiveDays=newDay;
+            saveUser(); updateAllBalances(); showToast(`চেক-ইন বোনাস ${bonus} টাকা!`); renderCalendar();
+        }
+
+        // event listeners
+        document.getElementById('placeBetBtn').onclick = () => {
+            let amt = parseFloat(document.getElementById('betAmount').value);
+            if(!currentSelectedBet.type) { showToast("বেট সিলেক্ট করুন!"); return; }
+            if(placeBet(currentSelectedBet.type, currentSelectedBet.value, amt)) currentSelectedBet = { type: null, value: null };
+        };
+        document.getElementById('currencyToggleBtn').onclick = () => { currencyPHP = !currencyPHP; updateAllBalances(); document.getElementById('currencySymbol').innerText = currencyPHP?'₱':'৳'; };
+        document.getElementById('copyReferralBtn').onclick = () => { navigator.clipboard.writeText(user.referralCode); showToast("কপি হয়েছে!"); };
+        document.getElementById('copyProfileReferral').onclick = () => { navigator.clipboard.writeText(user.referralCode); showToast("কপি হয়েছে!"); };
+        document.getElementById('depositBtn').onclick = () => { let amt=parseFloat(document.getElementById('depositAmount').value); if(amt>=50){ user.balance+=amt; transactions.unshift({date:new Date().toLocaleString(), type:"ডিপোজিট", amount:amt}); saveUser(); saveTransactions(); updateAllBalances(); renderTransactions(); showToast("ডিপোজিট সিমুলেটেড!");}};
+        document.getElementById('withdrawBtn').onclick = () => { let amt=parseFloat(document.getElementById('withdrawAmount').value); if(amt>=500 && amt<=user.balance){ user.balance-=amt; transactions.unshift({date:new Date().toLocaleString(), type:"উইথড্র", amount:amt}); saveUser(); updateAllBalances(); renderTransactions(); showToast("উইথড্র অনুরোধ সিমুলেটেড");}};
+        document.getElementById('redeemGiftBtn').onclick = () => { let code=document.getElementById('giftCodeInput').value.toUpperCase(); let validCodes=["WELCOME50","BOT100","LUCKY500"]; if(validCodes.includes(code) && !redeemedGifts.some(g=>g.code===code)){ let bonus=code==="WELCOME50"?50:(code==="BOT100"?100:500); user.balance+=bonus; redeemedGifts.push({code,date:new Date().toLocaleString()}); saveUser(); localStorage.setItem('botclub_redeemedGifts',JSON.stringify(redeemedGifts)); updateAllBalances(); renderGiftHistory(); showToast(`${bonus} টাকা বোনাস!`);} else showToast("ইনভালিড বা ইউজড কোড!");};
+        document.getElementById('logoutBtn').onclick = () => { localStorage.clear(); location.reload(); };
+        document.getElementById('historyFilter').addEventListener('change',()=>renderHistory());
+        document.querySelectorAll('.nav-btn').forEach(btn=>btn.addEventListener('click',()=>showPage(btn.dataset.page)));
+        document.getElementById('shareBtn').onclick = () => alert("শেয়ার লিংক কপি করুন (সিমুলেটেড)");
+        setInterval(()=>{renderLeaderboard(); renderHistory(); renderTransactions(); renderReferral(); renderGiftHistory();}, 2000);
+        
+        function init(){
+            loadNumberGrid(); attachBetListeners(); startTimer(); updateAllBalances(); renderLeaderboard(); renderTransactions(); renderReferral(); renderGiftHistory(); renderCalendar(); renderHistory();
+            document.getElementById('calendarGrid').addEventListener('click',dailyCheckin);
+            showPage('home');
+        }
+        init();
+    </script>
 </body>
 </html>
